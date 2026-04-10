@@ -1,6 +1,13 @@
 import { useId } from 'react'
+import type { ComponentPropsWithoutRef } from 'react'
 
-export default function Input({ label, error, className = '', ...props }) {
+type Props = {
+  label?: string
+  error?: string | null | undefined
+  className?: string
+} & ComponentPropsWithoutRef<'input'>
+
+export default function Input({ label, error, className = '', ...props }: Props) {
   const id = useId()
   return (
     <label className={['field', className].filter(Boolean).join(' ')}>

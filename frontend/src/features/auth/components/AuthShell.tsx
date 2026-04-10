@@ -1,6 +1,14 @@
+import type { ReactNode } from 'react'
 import Surface from '../../../components/ui/Surface'
 
-export default function AuthShell({ title, subtitle, footer, children }) {
+type Props = {
+  title: string
+  subtitle?: string
+  footer?: ReactNode
+  children: ReactNode
+}
+
+export default function AuthShell({ title, subtitle, footer, children }: Props) {
   return (
     <div className="auth">
       <div className="auth__bg" aria-hidden="true" />

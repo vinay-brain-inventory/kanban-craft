@@ -1,35 +1,15 @@
 import { useState } from 'react'
-import { logOut } from './authSlice'
-import { useAppDispatch, useAppSelector } from '../../store/hooks'
-import Button from '../../components/ui/Button'
+import { useAppSelector } from '../../store/hooks'
 import AuthShell from './components/AuthShell'
 import LoginForm from './components/LoginForm'
 import SignupForm from './components/SignupForm'
 
-export default function AuthPage() {
-  const dispatch = useAppDispatch()
-  const user = useAppSelector((s) => s.auth.currentUser)
-  const [mode, setMode] = useState('login')
+type Mode = 'login' | 'signup'
 
-  if (user) {
-    return (
-      <div className="auth">
-        <div className="auth__bg" aria-hidden="true" />
-        <div className="authed">
-          <div className="authed__top">
-            <div className="badge">Logged in</div>
-            <Button variant="ghost" onClick={() => dispatch(logOut())}>
-              Log out
-            </Button>
-          </div>
-          <div className="authed__card">
-            <div className="authed__name">{user.name}</div>
-            <div className="authed__email">{user.email}</div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+export default function AuthPage() {
+  const [mode, setMode] = useState<Mode>('login')
+  const user = useAppSelector((s) => s.auth.currentUser)
+  if (user) return null
 
   const isLogin = mode === 'login'
 

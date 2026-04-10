@@ -1,19 +1,29 @@
 import { useMemo, useState } from 'react'
-import { clearAuthError, signUp } from '../authSlice'
-import { useAppDispatch, useAppSelector } from '../../../store/hooks'
 import Button from '../../../components/ui/Button'
 import Input from '../../../components/ui/Input'
+import { useAppDispatch, useAppSelector } from '../../../store/hooks'
+import { clearAuthError, signUp } from '../authSlice'
 
 const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export default function SignupForm({ onSwitch }) {
+type Props = {
+  onSwitch?: () => void
+}
+
+type Values = {
+  name: string
+  email: string
+  password: string
+}
+
+export default function SignupForm({ onSwitch }: Props) {
   const dispatch = useAppDispatch()
   const error = useAppSelector((s) => s.auth.error)
-  const [values, setValues] = useState({ name: '', email: '', password: '' })
-  const [touched, setTouched] = useState({})
+  const [values, setValues] = useState<Values>({ name: '', email: '', password: '' })
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
 
   const fieldErrors = useMemo(() => {
-    const e = {}
+    const e: Record<string, string> = {}
     if (!values.name.trim()) e.name = 'Name is required'
     if (!values.email.trim()) e.email = 'Email is required'
     else if (!emailRx.test(values.email.trim())) e.email = 'Enter a valid email'
@@ -24,14 +34,15 @@ export default function SignupForm({ onSwitch }) {
 
   const canSubmit = Object.keys(fieldErrors).length === 0
 
-  const setField = (key) => (ev) => {
-    if (error) dispatch(clearAuthError())
-    setValues((v) => ({ ...v, [key]: ev.target.value }))
-  }
+  const setField =
+    (key: keyof Values) => (ev: React.ChangeEvent<HTMLInputElement>) => {
+      if (error) dispatch(clearAuthError())
+      setValues((v) => ({ ...v, [key]: ev.target.value }))
+    }
 
-  const onBlur = (key) => () => setTouched((t) => ({ ...t, [key]: true }))
+  const onBlur = (key: keyof Values) => () => setTouched((t) => ({ ...t, [key]: true }))
 
-  const submit = (ev) => {
+  const submit = (ev: React.FormEvent) => {
     ev.preventDefault()
     setTouched({ name: true, email: true, password: true })
     if (!canSubmit) return
@@ -45,7 +56,7 @@ export default function SignupForm({ onSwitch }) {
         value={values.name}
         onChange={setField('name')}
         onBlur={onBlur('name')}
-        error={touched.name ? fieldErrors.name : null}
+        error={touched.name ? (fieldErrors.name ?? null) : null}
         placeholder="Vinay Sharma"
       />
       <Input
@@ -55,7 +66,7 @@ export default function SignupForm({ onSwitch }) {
         value={values.email}
         onChange={setField('email')}
         onBlur={onBlur('email')}
-        error={touched.email ? fieldErrors.email : null}
+        error={touched.email ? (fieldErrors.email ?? null) : null}
         placeholder="you@domain.com"
       />
       <Input
@@ -65,7 +76,7 @@ export default function SignupForm({ onSwitch }) {
         value={values.password}
         onChange={setField('password')}
         onBlur={onBlur('password')}
-        error={touched.password ? fieldErrors.password : null}
+        error={touched.password ? (fieldErrors.password ?? null) : null}
         placeholder="min 6 chars"
       />
       {error ? <div className="alert">{error}</div> : null}
